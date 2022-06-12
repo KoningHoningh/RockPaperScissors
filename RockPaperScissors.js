@@ -34,19 +34,32 @@ function playerPlay() {
 }
 
 // Determines who wins
-function playRound(playerChoice, computerChoice, newDiv, playerWins, computerWins) {
+function playRound(playerChoice, computerChoice, currentDiv, playerWins, computerWins) {
     if (playerChoice === computerChoice) {
+        const newDiv = document.createElement("div");
         newDiv.innerHTML = "It's a DRAW! Both players played " + playerChoice +"."; //In case of a player draw
+        currentDiv.appendChild(newDiv)
+        showScore(playerWins, computerWins, currentDiv)
+        return 0;
+  
     }
     else if ((playerChoice == "ROCK" && computerChoice == "SCISSORS") || (playerChoice == "SCISSORS" && computerChoice == "PAPER")||
      (playerChoice == "PAPER" && computerChoice == "ROCK"))
     {
+        const newDiv = document.createElement("div")
         newDiv.innerHTML = 'You WIN! ' + playerChoice + " Beats " + computerChoice + "!"; // In case the player wins.
-        playerWins += 1;
+        currentDiv.appendChild(newDiv);
+        showScore(playerWins+1, computerWins, currentDiv)
+        return 1;
     }
     else {
+        const newDiv = document.createElement("div")
         newDiv.innerHTML = "You LOSE! " + computerChoice + " Beats " + playerChoice + "!"; // In case the CPU wins
-        computerWins += 1;
+        currentDiv.appendChild(newDiv);
+        showScore(playerWins, computerWins+1, currentDiv)
+        return -1;
+
+        
     };
     return playerWins,computerWins;
 };
@@ -56,18 +69,48 @@ function showResult(result,newDiv)
     newDiv.innerHTML = result;
     console.log(result);
 }
-
-
-// Checks whether or not there have been 5 rounds played. Returns 0 when true to reset the game.
-function endGameCheck(playerWins, computerWins)
+// Insert a div that shows the score.
+function showScore(playerWins, computerWins, currentDiv)
 {
-    playCount +=1;
-    if (playCount === 5)
+    const newDiv2 = document.createElement("div"); 
+    newDiv2.innerHTML = "The score is now: " + playerWins + "-" + computerWins + ".";
+    currentDiv.appendChild(newDiv2);
+}
+
+
+// Checks whether or not the player or computer has won 5 rounds.
+function endGameCheck(playerWins, computerWins, currentDiv)
+{
+    
+    if (playerWins === 5)
     {
-        console.log("Game Over")
-        return 0;
+        const newDiv = document.createElement("div");
+        newDiv.innerHTML = "Game Over";
+        currentDiv.appendChild(newDiv);
+
+        const newGameButton = document.createElement("BUTTON");
+        newGameButton.appendChild(document.createTextNode("New Game"))
+        currentDiv.appendChild(newGameButton);
+        newGameButton.addEventListener("click", function() {
+            currentDiv.innerHTML = "";
+        })
     }
-    return playCount;
+    else if (computerWins === 5)
+    {
+        const newDiv = document.createElement("div")
+        newDiv.innerHTML= "Game Over";
+        currentDiv.appendChild(newDiv);
+        const newGameButton = document.createElement("BUTTON");
+        newGameButton.appendChild(document.createTextNode("New Game"))
+        currentDiv.appendChild(newGameButton);
+        newGameButton.addEventListener("click", function() {
+            currentDiv.innerHTML = "";
+        })
+    }
+    else {return false};
+    
+    return true;
+    
 }
 
 function playGame() {
@@ -78,12 +121,26 @@ function playGame() {
     const paper = document.querySelector(".paper");
     const scissors = document.querySelector(".scissors");
     const newDiv = document.createElement("div");
-    const currentDiv = document.querySelector(".div1");
+    const currentDiv = document.querySelector(".div2");
     newDiv.innerHTML = "";
-    document.body.appendChild(newDiv);
+    currentDiv.appendChild(newDiv);
     
     rock.addEventListener("click", function(){
-        playRound("ROCK", computerPlay(), newDiv, playerWins, computerWins);
+        
+        const result = playRound("ROCK", computerPlay(), newDiv, playerWins, computerWins);
+        if (result === 1) {
+            playerWins += 1;
+        }
+        else if (result === -1)
+        {
+            computerWins += 1;
+        }
+        
+        if (endGameCheck(playerWins, computerWins, currentDiv))
+        {
+            playerWins = 0;
+            computerWins = 0;
+        }
     });
 
     paper.addEventListener("click", function(){

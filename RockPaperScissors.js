@@ -34,12 +34,12 @@ function playerPlay() {
 }
 
 // Determines who wins
-function playRound(playerChoice, computerChoice, currentDiv, playerWins, computerWins) {
+function playRound(playerChoice, computerChoice, currentDiv) {
     if (playerChoice === computerChoice) {
         const newDiv = document.createElement("div");
         newDiv.innerHTML = "It's a DRAW! Both players played " + playerChoice +"."; //In case of a player draw
         currentDiv.appendChild(newDiv)
-        showScore(playerWins, computerWins, currentDiv)
+        
         return 0;
   
     }
@@ -49,14 +49,12 @@ function playRound(playerChoice, computerChoice, currentDiv, playerWins, compute
         const newDiv = document.createElement("div")
         newDiv.innerHTML = 'You WIN! ' + playerChoice + " Beats " + computerChoice + "!"; // In case the player wins.
         currentDiv.appendChild(newDiv);
-        showScore(playerWins+1, computerWins, currentDiv)
         return 1;
     }
     else {
         const newDiv = document.createElement("div")
         newDiv.innerHTML = "You LOSE! " + computerChoice + " Beats " + playerChoice + "!"; // In case the CPU wins
         currentDiv.appendChild(newDiv);
-        showScore(playerWins, computerWins+1, currentDiv)
         return -1;
 
         
@@ -79,39 +77,34 @@ function showScore(playerWins, computerWins, currentDiv)
 
 
 // Checks whether or not the player or computer has won 5 rounds.
-function endGameCheck(playerWins, computerWins, currentDiv)
+function endGameCheck(playerWins, computerWins, currentDiv, rock, paper, scissors)
 {
     
-    if (playerWins === 5)
-    {
-        const newDiv = document.createElement("div");
-        newDiv.innerHTML = "Game Over";
-        currentDiv.appendChild(newDiv);
-
-        const newGameButton = document.createElement("BUTTON");
-        newGameButton.appendChild(document.createTextNode("New Game"))
-        currentDiv.appendChild(newGameButton);
-        newGameButton.addEventListener("click", function() {
-            currentDiv.innerHTML = "";
-        })
-    }
-    else if (computerWins === 5)
-    {
-        const newDiv = document.createElement("div")
-        newDiv.innerHTML= "Game Over";
-        currentDiv.appendChild(newDiv);
-        const newGameButton = document.createElement("BUTTON");
-        newGameButton.appendChild(document.createTextNode("New Game"))
-        currentDiv.appendChild(newGameButton);
-        newGameButton.addEventListener("click", function() {
-            currentDiv.innerHTML = "";
-        })
-    }
-    else {return false};
-    
-    return true;
-    
+    if (playerWins === 5 || computerWins === 5) {return true} 
 }
+
+function blockButtons(rock, paper, scissors) 
+{
+    rock.disabled = true;
+    paper.disabled = true;
+    scissors.disabled = true;
+}
+
+function newGameButton(rock, paper, scissors, currentDiv) 
+{
+    blockButtons(rock, paper,scissors)
+    const newDiv = document.createElement("div")
+    newDiv.innerHTML= "Game Over";
+    currentDiv.appendChild(newDiv);
+    const newGameButton = document.createElement("BUTTON");
+    newGameButton.appendChild(document.createTextNode("New Game"))
+    currentDiv.appendChild(newGameButton);
+    newGameButton.addEventListener("click", function() {
+        currentDiv.innerHTML = "";
+        rock.disabled = false;
+        paper.disabled = false;
+        scissors.disabled = false;
+})}
 
 function playGame() {
 
@@ -127,28 +120,62 @@ function playGame() {
     
     rock.addEventListener("click", function(){
         
-        const result = playRound("ROCK", computerPlay(), newDiv, playerWins, computerWins);
+        const result = playRound("ROCK", computerPlay(), currentDiv);
         if (result === 1) {
-            playerWins += 1;
+            playerWins += 1;  
         }
         else if (result === -1)
         {
-            computerWins += 1;
+            computerWins += 1;  
         }
-        
-        if (endGameCheck(playerWins, computerWins, currentDiv))
+        showScore(playerWins, computerWins, currentDiv)
+
+        if (endGameCheck(playerWins, computerWins, currentDiv, rock, paper, scissors))
         {
             playerWins = 0;
             computerWins = 0;
+            newGameButton(rock, paper, scissors, currentDiv);
+
+        }
+    });
+    paper.addEventListener("click", function(){
+        const result = playRound("PAPER", computerPlay(), currentDiv);
+        if (result === 1) {
+            playerWins += 1;  
+        }
+        else if (result === -1)
+        {
+            computerWins += 1;  
+        }
+        showScore(playerWins, computerWins, currentDiv)
+
+        if (endGameCheck(playerWins, computerWins, currentDiv, rock, paper, scissors))
+        {
+            playerWins = 0;
+            computerWins = 0;
+            newGameButton(rock, paper, scissors, currentDiv);
+
         }
     });
 
-    paper.addEventListener("click", function(){
-        playRound("PAPER", computerPlay(), newDiv, playerWins, computerWins);
-    });
-
     scissors.addEventListener("click", function(){
-        playRound("SCISSORS", computerPlay(), newDiv, playerWins, computerWins);
+        const result = playRound("SCISSORS", computerPlay(), currentDiv);
+        if (result === 1) {
+            playerWins += 1;  
+        }
+        else if (result === -1)
+        {
+            computerWins += 1;  
+        }
+        showScore(playerWins, computerWins, currentDiv)
+
+        if (endGameCheck(playerWins, computerWins, currentDiv, rock, paper, scissors))
+        {
+            playerWins = 0;
+            computerWins = 0;
+            newGameButton(rock, paper, scissors, currentDiv);
+
+        }
     });
 
 
